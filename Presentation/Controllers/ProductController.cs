@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using NHibernate.Engine;
+using NHibernate.Mapping.ByCode.Impl;
 using Services.Abstractions;
 using Shared.ProductDto;
 using System.Reflection;

@@ -1,11 +1,7 @@
 ﻿using AutoMapper;
 using Domain.Entities;
 using Shared.ProductDto;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace Services.MappingProfiles
 {
@@ -15,14 +11,14 @@ namespace Services.MappingProfiles
         {
 
 
-
             CreateMap<Product, ProductResultDto>()
                 .ForMember(d => d.BrandName, options => options.MapFrom(src => src.ProductBrand.Name))
-                .ForMember(d => d.TypeName, options => options.MapFrom(src => src.ProductType.Name));
+                .ForMember(d => d.TypeName, options => options.MapFrom(src => src.ProductType.Name))
+                .ForMember(d => d.PictureUrl, options => options.MapFrom<PictureUrlResolver>()); 
 
 
 
-            CreateMap<ProductType, TypeResultDto>();
+            CreateMap<ProductType, TypeResultDto>(); 
             CreateMap<ProductBrand, BrandResultDto>();
         }
     }

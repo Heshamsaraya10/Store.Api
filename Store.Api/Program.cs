@@ -5,10 +5,13 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Presistence;
 using Presistence.Data;
+using Presistence.Repositories;
 using Services;
 using Services.Abstractions;
 using Services.MappingProfiles;
 using System.Reflection.Metadata;
+
+
 
 namespace Store.Api
 {
@@ -30,9 +33,10 @@ namespace Store.Api
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             builder.Services.AddScoped<IServiceManager, ServiceManager>();
 
-            builder.Services.AddAutoMapper(x => x.AddProfile(new ProductProfile()));
+            //builder.Services.AddAutoMapper(x => x.AddProfile(new ProductProfile()));
 
-            //builder.Services.AddAutoMapper(typeof(ProductProfile).Assembly);
+            builder.Services.AddAutoMapper(typeof(ProductProfile).Assembly);
+
 
 
 

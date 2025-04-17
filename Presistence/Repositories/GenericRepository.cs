@@ -24,7 +24,8 @@ namespace Presistence.Repositories
 
         public async Task<IEnumerable<TEntity?>> GetAllAsync(bool isTrackable = false)
         {
-           if(isTrackable)
+
+            if (isTrackable)
             
               return  await _context.Set<TEntity>().ToListAsync();
 
@@ -33,10 +34,23 @@ namespace Presistence.Repositories
                                    .ToListAsync();
         }
 
+        public async Task<IEnumerable<TEntity>> GetAllAsync(Specification<TEntity> specification)
+        {
+           return await Applyspecification(specification).ToListAsync();
+        }
+
         public async Task<TEntity?> GetAsync(TKey id)
         
           =>  await _context.Set<TEntity>().FindAsync(id);
-        
+
+        public async Task<TEntity?> GetAsync(Specification<TEntity> specification)
+        {
+            return await Applyspecification(specification).FirstOrDefaultAsync();
+        }
+
+        private IQueryable<TEntity> Applyspecification(Specification<TEntity> specification)
+            => SpecificationEvaluator.GetQuery(_context.Set<TEntity>(), specification);
+
 
         public void Update(TEntity entity)
             => _context.Set<TEntity>().Update(entity);

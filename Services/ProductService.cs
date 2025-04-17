@@ -21,7 +21,7 @@ namespace Services
 
         public async Task<IEnumerable<ProductResultDto>> GetAllProductsAsync()
         {
-           var products = unitOfWork.GetRepository<Product, int>().GetAllAsync();
+           var products = await unitOfWork.GetRepository<Product, int>().GetAllAsync();
 
             var MappProducts = mapper.Map<IEnumerable<ProductResultDto>>(products);
 
@@ -39,11 +39,18 @@ namespace Services
 
         public async Task<ProductResultDto> GetProductByIdAsync(int id)
         {
-            var product = unitOfWork.GetRepository<Product, int>().GetAsync(id);
+            try
+            {
+                var product = await unitOfWork.GetRepository<Product, int>().GetAsync(id);
 
-            var MappProduct = mapper.Map<ProductResultDto>(product);
+                var MappProduct = mapper.Map<ProductResultDto>(product);
 
-            return MappProduct;
+                return MappProduct;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
         }
     }
 }
