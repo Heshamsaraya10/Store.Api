@@ -1,9 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using NHibernate.Engine;
-using NHibernate.Mapping.ByCode.Impl;
 using Services.Abstractions;
+using Shared;
 using Shared.ProductDto;
-using System.Reflection;
 
 
 namespace Presentation.Controllers
@@ -13,10 +11,9 @@ namespace Presentation.Controllers
     public class ProductController(IServiceManager serviceManager) : ApiController
     {
         [HttpGet]
-
-        public async Task<ActionResult<IEnumerable<ProductResultDto>>> GetAllProducts()
+        public async Task<ActionResult<PaginatedResult<ProductResultDto>>> GetAllProducts([FromQuery] ProductSpecificationParams specs)
         {
-            var products = await serviceManager.ProductService.GetAllProductsAsync();
+            var products = await serviceManager.ProductService.GetAllProductsAsync(specs);
             return Ok(products);
         }
 

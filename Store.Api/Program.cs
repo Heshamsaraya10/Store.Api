@@ -10,6 +10,7 @@ using Services;
 using Services.Abstractions;
 using Services.MappingProfiles;
 using System.Reflection.Metadata;
+using System.Text.Json.Serialization;
 
 
 
@@ -23,7 +24,9 @@ namespace Store.Api
 
             // Add services to the container.
 
-            builder.Services.AddControllers();
+            builder.Services.AddControllers().AddJsonOptions(option =>
+            option.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
+
             builder.Services.AddDbContext<StoreDbContext>(options =>
             {
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));

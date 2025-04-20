@@ -1,7 +1,9 @@
-﻿using AutoMapper;
+﻿ using AutoMapper;
 using Domain;
 using Domain.Entities;
 using Services.Abstractions;
+using Services.Specifications;
+using Shared;
 using Shared.ProductDto;
 
 
@@ -19,13 +21,20 @@ namespace Services
             return MappBrands; 
         }
 
-        public async Task<IEnumerable<ProductResultDto>> GetAllProductsAsync()
+        public async Task<PaginatedResult<ProductResultDto>> GetAllProductsAsync(ProductSpecificationParams SpecificationParams)
         {
-           var products = await unitOfWork.GetRepository<Product, int>().GetAllAsync();
+            var specs = new ProductWithFilterSpecification(SpecificationParams); 
+
+            var products = await unitOfWork.GetRepository<Product, int>().GetAllAsync(specs);
+
+            var countSpecs = new ProductCountSpecification(SpecificationParams);
+
+            var totalCount = await unitOfWork.GetRepository<Product, int>().CountAsync(countSpecs);
 
             var MappProducts = mapper.Map<IEnumerable<ProductResultDto>>(products);
 
-            return MappProducts;
+            return new PaginatedResult<ProductResultDto>
+                (SpecificationParams.PageIndex , SpecificationParams.PageSize , totalCount, MappProducts);
         }
 
         public async Task<IEnumerable<TypeResultDto>> GetAllTypesAsync()
@@ -41,7 +50,8 @@ namespace Services
         {
             try
             {
-                var product = await unitOfWork.GetRepository<Product, int>().GetAsync(id);
+                var specs = new ProductWithFilterSpecification(id);
+                var product = await unitOfWork.GetRepository<Product, int>().GetAsync(specs);
 
                 var MappProduct = mapper.Map<ProductResultDto>(product);
 

@@ -18,8 +18,19 @@ namespace Presistence
                 query = query.Where(specifications.Criteria);
 
             query = specifications.Includes.Aggregate(query , (currentQuery , include) => currentQuery.Include(include));
+            if (specifications.OrderBy != null)
+                query = query.OrderBy(specifications.OrderBy);
+
+           else if (specifications.OrderByDescending != null)
+                query = query.OrderByDescending(specifications.OrderByDescending);
+
+
+            if (specifications.IsPaginated)
+                query = query.Skip(specifications.Skip).Take(specifications.Take);
+
             return query;
 
         }
     }
 }
+ 
