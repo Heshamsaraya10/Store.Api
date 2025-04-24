@@ -1,5 +1,4 @@
-﻿using Domain;
-using Domain.Contracts;
+﻿using Domain.Contracts;
 using Domain.Entities;
 using Presistence.Data;
 using System;

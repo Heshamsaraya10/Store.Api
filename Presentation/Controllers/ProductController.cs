@@ -1,13 +1,15 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Services.Abstractions;
 using Shared;
+using Shared.ErrorModels;
 using Shared.ProductDto;
+using System.Net;
 
 
 namespace Presentation.Controllers
 {
-    [ApiController]
-    [Route("api/[controller]/[action]")]
+    //[ApiController]
+    //[Route("api/[controller]/[action]")]
     public class ProductController(IServiceManager serviceManager) : ApiController
     {
         [HttpGet]
@@ -18,6 +20,7 @@ namespace Presentation.Controllers
         }
 
         [HttpGet]
+        [ProducesResponseType(typeof(ProductResultDto), (int)HttpStatusCode.OK)]
         public async Task<ActionResult<ProductResultDto>> GetProducts(int id)
         {
             var product = await serviceManager.ProductService.GetProductByIdAsync(id);

@@ -1,6 +1,5 @@
-
-using Domain;
 using Domain.Contracts;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Presistence;
@@ -9,6 +8,9 @@ using Presistence.Repositories;
 using Services;
 using Services.Abstractions;
 using Services.MappingProfiles;
+using StackExchange.Redis;
+using Store.Api.Factories;
+using Store.Api.MiddleWares;
 using System.Reflection.Metadata;
 using System.Text.Json.Serialization;
 
@@ -32,14 +34,21 @@ namespace Store.Api
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
             });
 
+            builder.Services.AddSingleton<IConnectionMultiplexer>
+                (_ => ConnectionMultiplexer.Connect(
+                    builder.Configuration.GetConnectionString("Redis"))
+                );
+
             builder.Services.AddScoped<IDbInitializer, DbInitializer>();
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             builder.Services.AddScoped<IServiceManager, ServiceManager>();
-
-            //builder.Services.AddAutoMapper(x => x.AddProfile(new ProductProfile()));
-
+            builder.Services.AddScoped<IBasketRepository, BasketRepository>(); 
             builder.Services.AddAutoMapper(typeof(ProductProfile).Assembly);
 
+            builder.Services.Configure<ApiBehaviorOptions>(options =>
+            {
+                options.InvalidModelStateResponseFactory = ApiResponseFactory.CustomValidationErrorResponse;
+            });
 
 
 
@@ -51,6 +60,7 @@ namespace Store.Api
             var app = builder.Build();
 
             await seedDbAsync(app);
+            app.UseMiddleware<GlobalErrorHandlingMiddleWare>();
 
 
             // Configure the HTTP request pipeline.
@@ -61,7 +71,7 @@ namespace Store.Api
             }
 
             app.UseStaticFiles();
-
+ 
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
