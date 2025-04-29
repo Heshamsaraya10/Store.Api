@@ -1,8 +1,11 @@
 ﻿using Domain.Contracts;
 using Domain.Entities;
+using Domain.Entities.Identity;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using Presistence.Data;
+using Presistence.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,20 +18,29 @@ namespace Presistence
     public class DbInitializer : IDbInitializer
     {
         private readonly StoreDbContext _context;
+        private readonly StoreIdentityDbContext _identityDbContext;
+        private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly UserManager<User> _userManager;
 
-        public DbInitializer(StoreDbContext context)
+        public DbInitializer(StoreDbContext context ,
+            StoreIdentityDbContext identityDbContext ,
+            RoleManager<IdentityRole> roleManager,
+            UserManager<User> userManager)
         {
             _context = context;
+            _identityDbContext = identityDbContext;
+            _roleManager = roleManager;
+            _userManager = userManager;
         }
         public async Task  InitializeAsync()
         {
             try
             {
                 //Check if the database is empty
-                //if (_context.Database.GetPendingMigrations().Any())
-                //{
-                //    _context.Database.Migrate();
-                //}
+                if (_context.Database.GetPendingMigrations().Any())
+                {
+                    _context.Database.Migrate();
+                }
 
 
                 if (!_context.ProductTypes.Any())
@@ -78,5 +90,45 @@ namespace Presistence
                 throw new Exception("Error initializing the database", ex);
             }
         }
+
+        public async Task InitializeIdentityAsync()
+        {
+            if (_identityDbContext.Database.GetPendingMigrations().Any())
+               await _identityDbContext.Database.MigrateAsync();
+            
+            if(!_roleManager.Roles.Any())
+            {
+               await _roleManager.CreateAsync(new IdentityRole { Name = "Admin" });
+               await _roleManager.CreateAsync(new IdentityRole { Name = "SuperAdmin" });
+            }
+
+            if (!_userManager.Users.Any())
+            {
+                var superAdminUser = new User
+                {
+                    DisplayName = "Super Admin",
+                    Email = "SuberAdmin@gmail.com",
+                    UserName = "SuperAdmin",
+                    PhoneNumber = "123456789",
+                };
+
+                var adminUser = new User
+                {
+                    DisplayName = "Admin",
+                    Email = "Admin@gmail.com",
+                    UserName = "Admin",
+                    PhoneNumber = "987654321",
+                };
+
+
+                await _userManager.CreateAsync(superAdminUser, "Passw0rd");
+                await _userManager.CreateAsync(adminUser, "Passw0rd");
+
+                await _userManager.AddToRoleAsync(superAdminUser, "SuperAdmin");
+                await _userManager.AddToRoleAsync(adminUser, "Admin");
+
+            }
+        }
     }
 }
+ 
