@@ -1,12 +1,16 @@
 ﻿using Domain.Contracts;
 using Domain.Entities.Identity;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Presistence;
 using Presistence.Data;
 using Presistence.Identity;
 using Presistence.Repositories;
+using Shared.IdentityDtos;
 using StackExchange.Redis;
+using System.Text;
 using System.Text.Json.Serialization;
 
 namespace Store.Api.Extentions
@@ -33,6 +37,7 @@ namespace Store.Api.Extentions
                 (_ => ConnectionMultiplexer.Connect(configuration.GetConnectionString("Redis"))
             );
             services.ConfigureIdentity();
+            services.ConfigureJwt(configuration);
 
             return services;
 
@@ -50,6 +55,31 @@ namespace Store.Api.Extentions
                 options.User.RequireUniqueEmail = true;
             }).AddEntityFrameworkStores<StoreIdentityDbContext>();
 
+            return services;
+        }
+
+        private static IServiceCollection ConfigureJwt(this IServiceCollection services , IConfiguration configuration)
+        {
+            var JwtCongfig = configuration.GetSection("JwtOptions").Get<JwtOptions>();
+
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateAudience = true,
+                    ValidateIssuer = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidAudience = JwtCongfig.Audience,
+                    ValidIssuer = JwtCongfig.Issuer,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(JwtCongfig.SecurityKey))
+
+                };
+            });
             return services;
         }
     }

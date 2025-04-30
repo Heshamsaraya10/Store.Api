@@ -1,6 +1,7 @@
 ﻿using Domain.Contracts;
 using Domain.Entities;
 using Domain.Entities.Identity;
+using Domain.Entities.OrderEntities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
@@ -52,8 +53,8 @@ namespace Presistence
 
                     if (types is not null && types.Any())
                     {
-                      await  _context.ProductTypes.AddRangeAsync(types);
-                      await  _context.SaveChangesAsync();
+                        await _context.ProductTypes.AddRangeAsync(types);
+                        await _context.SaveChangesAsync();
                     }
                 }
 
@@ -66,8 +67,8 @@ namespace Presistence
 
                     if (brands is not null && brands.Any())
                     {
-                       await _context.ProductBrands.AddRangeAsync(brands);
-                       await _context.SaveChangesAsync();
+                        await _context.ProductBrands.AddRangeAsync(brands);
+                        await _context.SaveChangesAsync();
                     }
                 }
 
@@ -80,8 +81,22 @@ namespace Presistence
 
                     if (products is not null && products.Any())
                     {
-                       await _context.Products.AddRangeAsync(products);
-                       await _context.SaveChangesAsync();
+                        await _context.Products.AddRangeAsync(products);
+                        await _context.SaveChangesAsync();
+                    }
+
+                    if (!_context.DeliveryMethods.Any())
+                    {
+                        var deliveryData = File.ReadAllText(@"..\Presistence\Data\Seeding\delivery.json");
+
+                        //Convert string to list of Products
+                        var deliveryMethods = JsonSerializer.Deserialize<List<DeliveryMethod>>(deliveryData);
+
+                        if (deliveryMethods is not null && deliveryMethods.Any())
+                        {
+                            await _context.DeliveryMethods.AddRangeAsync(deliveryMethods);
+                            await _context.SaveChangesAsync();
+                        }
                     }
                 }
             }
