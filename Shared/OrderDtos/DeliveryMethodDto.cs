@@ -4,10 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Domain.Entities.OrderEntities
+namespace Shared.OrderDtos
 {
-    public class DeliveryMethod : BaseEntity<int>
+    public record DeliveryMethodDto
     {
+        public int Id { get; set; }
         public string ShortName { get; set; }
 
         public string Description { get; set; }
@@ -15,6 +16,5 @@ namespace Domain.Entities.OrderEntities
         public string DeliveryTime { get; set; }
 
         public decimal Price { get; set; }
-
     }
 }

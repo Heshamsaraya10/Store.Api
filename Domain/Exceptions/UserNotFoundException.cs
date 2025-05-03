@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Domain.Exceptions
 {
-    public class UserNotFoundException(string email)
+    public sealed class UserNotFoundException(string email)
         : NotFoundException($"Not Found User with this email :{ email }");
    
        

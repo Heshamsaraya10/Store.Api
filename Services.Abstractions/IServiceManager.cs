@@ -14,6 +14,8 @@ namespace Services.Abstractions
 
         public IAuthenticationServices AuthenticationService { get; }
 
+        public IOrderService OrderService { get; }
+
 
     }
-}
+} 
