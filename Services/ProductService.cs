@@ -20,6 +20,7 @@ namespace Services
             var MappBrands = mapper.Map<IEnumerable<BrandResultDto>>(brands);
 
             return MappBrands; 
+
         }
 
         public async Task<PaginatedResult<ProductResultDto>> GetAllProductsAsync(ProductSpecificationParams SpecificationParams)
