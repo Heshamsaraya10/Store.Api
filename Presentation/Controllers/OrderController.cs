@@ -41,7 +41,7 @@ namespace Presentation.Controllers
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<DeliveryMethodDto>>> GetDeliveryMethods()
-            =>  Ok(await serviceManager.OrderService.GetdeliveryMethodDtos(););
+            =>  Ok(await serviceManager.OrderService.GetdeliveryMethodDtos());
         
     }
 }

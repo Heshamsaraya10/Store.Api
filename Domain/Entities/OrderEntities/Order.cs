@@ -43,6 +43,9 @@ namespace Domain.Entities.OrderEntities
 
         public decimal Subtotal { get; set; }
 
+        public string PaymentIntentId { get; set; }
+
+
     }
 }
  

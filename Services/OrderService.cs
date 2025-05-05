@@ -28,12 +28,26 @@ namespace Services
 
             if (basket is null)
                 throw new BasketNotFoundException(orderRequest.BasketId);
-            
+
+            var OrderRepo = unitOfWork.GetRepository<Order, Guid>();
+
+            var existingOrderSpcs = new OrderWithIncludeSpecification(basket.PaymentIntentId);
+
+
+            var existingOrder = await OrderRepo.GetAsync(existingOrderSpcs);
+
+            if(existingOrder is not null)
+                OrderRepo.Delete(existingOrder);
+
+
+
             var orderItems = new List<OrderItem>();
+
+            var ProductRepo = unitOfWork.GetRepository<Product, int>();
 
             foreach (var item in basket.Items)
             {
-                var product = await unitOfWork.GetRepository<Product, int>().GetAsync(item.Id);
+                var product = await ProductRepo.GetAsync(item.Id);
 
                 if (product is null)
                     throw new ProductNotFoundException(item.Id);
@@ -55,7 +69,7 @@ namespace Services
 
                 var order = new Order(BuyerEmail , address , orderItems , deliveryMethod , subTotal );
 
-            await unitOfWork.GetRepository<Order , Guid>().AddAsync(order);
+            await OrderRepo.AddAsync(order);
 
             await unitOfWork.SaveChangesAsync();
 
