@@ -16,6 +16,8 @@ namespace Services.Abstractions
 
         public IOrderService OrderService { get; }
 
+        public IPaymentService PaymentService { get; }
 
+        public ICachService CachService { get; }
     }
 } 

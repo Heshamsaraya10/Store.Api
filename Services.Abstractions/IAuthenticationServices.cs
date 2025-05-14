@@ -14,8 +14,8 @@ namespace Services.Abstractions
         Task<UserResultDto> GetUserByEmailAsync(string email);
         Task<bool> IsEmailExist(string email);
 
-        Task<AddressDto> GetUserAddressAsync(string email);
-        Task<AddressDto> UpdateUserAddressAsync(string email , AddressDto addressDto);
+        Task<IdentityAddressDto> GetUserAddressAsync(string email);
+        Task<IdentityAddressDto> UpdateUserAddressAsync(string email , IdentityAddressDto addressDto);
 
 
 

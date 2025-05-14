@@ -22,6 +22,7 @@ namespace Store.Api.Extentions
             services.AddScoped<IDbInitializer, DbInitializer>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IBasketRepository, BasketRepository>();
+            services.AddScoped<ICachRepository, CachRepository>();
 
             services.AddDbContext<StoreDbContext>(options =>
             {

@@ -6,9 +6,8 @@ using System.Threading.Tasks;
 
 namespace Shared.IdentityDtos
 {
-    public record AddressDto
+    public record IdentityAddressDto
     {
-      
         public string FirstName { get; set; }
 
         public string LastName { get; set; }
